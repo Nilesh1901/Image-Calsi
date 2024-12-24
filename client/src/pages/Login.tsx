@@ -15,9 +15,9 @@ function Login() {
   }
 
   return (
-    <div className="h-screen w-full  bg-gradient-to-r from-emerald-400 to-cyan-400">
+    <div className="h-screen w-full bg-[#d7c9bc]">
       <div className="p-5 h-full flex items-center justify-center">
-        <div className="flex lg:flex-row lg:h-[22rem] flex-col rounded-md shadow-lg">
+        <div className="flex lg:flex-row lg:h-[22rem] bg-white flex-col rounded-md shadow-lg">
           <img className="object-cover rounded-md" src={logo} alt="" />
           <div className="md:w-[24rem] mx-auto  w-full p-5">
             <h2 className="text-center font-semibold text-2xl mb-5">Login</h2>

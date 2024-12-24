@@ -15,18 +15,19 @@ function SignUp() {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
-
   function handleSignUp() {}
   return (
-    <div className="h-screen w-full  bg-gradient-to-r from-emerald-400 to-cyan-400">
+    <div className="h-screen w-full  bg-[#d7c9bc]">
       <div className="p-5 h-full flex items-center justify-center">
-        <div className="flex lg:flex-row lg:h-[22rem] flex-col rounded-md shadow-lg">
+        <div className="flex lg:flex-row lg:h-[22rem] bg-white flex-col rounded-md shadow-lg">
           <img className="object-cover rounded-md" src={logo} alt="" />
           <div className="lg:w-[24rem] w-full flex flex-col  justify-center p-4 sm:p-6">
-            <h2 className="text-center font-semibold text-2xl mb-4">Sign Up</h2>
+            <h2 className="text-center font-semibold text-2xl my-2 ">
+              Sign Up
+            </h2>
             <form action="" onSubmit={handleSignUp}>
               <div className="">
-                <label htmlFor="username" className="font-semibold">
+                <label htmlFor="username" className="font-semibold ">
                   Username:
                 </label>
                 <Input
@@ -79,7 +80,10 @@ function SignUp() {
             </form>
             <p className="text-xs sm:text-sm mb-3">
               Allready have an account?
-              <Link to={"/login"} className="text-blue-500 ml-1 cursor-pointer">
+              <Link
+                to={"/login"}
+                className="text-blue-500 ml-1 cursor-pointer "
+              >
                 Login
               </Link>
             </p>
