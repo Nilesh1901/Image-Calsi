@@ -12,13 +12,13 @@ function Login() {
   return (
     <div className="h-screen w-full  bg-gradient-to-r from-emerald-400 to-cyan-400">
       <div className="p-5 h-full flex items-center justify-center">
-        <div className="flex lg:flex-row lg:h-[400px] flex-col rounded-md gap-10 shadow-lg">
+        <div className="flex lg:flex-row lg:h-[22rem] flex-col rounded-md shadow-lg">
           <img
-            className="sm:max-w-md  w-full object-cover rounded-md"
+            className="object-cover rounded-md"
             src={logo}
             alt=""
           />
-          <div className="md:w-[410px] mx-auto flex-2 w-full p-5">
+          <div className="md:w-[24rem] mx-auto  w-full p-5">
             <h2 className="text-center font-semibold text-2xl mb-5">Login</h2>
             <form action="">
               <div className="mb-2">
