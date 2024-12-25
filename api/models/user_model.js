@@ -22,7 +22,13 @@ const userSchema = new Schema(
     images: [
       {
         url: { type: String, required: true }, // Firebase image URL
-        extractedText: { type: String }, // OCR result
+        extractedText: [
+          {
+            productName: String,
+            quantity: Number,
+            pricePerUnit: Number,
+          },
+        ], // OCR result
         uploadedAt: { type: Date, default: Date.now },
       },
     ],
