@@ -31,7 +31,7 @@ app.use("/api/upload", uploadRouter);
 app.use((err, req, res, next) => {
   const { statusCode = 500, message = "server error" } = err;
 
-  res.statusCode(statusCode).json({
+  return res.status(statusCode).json({
     success: false,
     message,
   });
