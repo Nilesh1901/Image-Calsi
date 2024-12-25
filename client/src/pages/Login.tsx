@@ -15,7 +15,7 @@ function Login() {
   }
 
   return (
-    <div className="h-screen w-full bg-[#d7c9bc]">
+    <div className="h-screen w-full bg-custom-beige">
       <div className="p-5 h-full flex items-center justify-center">
         <div className="flex lg:flex-row lg:h-[22rem] bg-white flex-col rounded-md shadow-lg">
           <img className="object-cover rounded-md" src={logo} alt="" />
