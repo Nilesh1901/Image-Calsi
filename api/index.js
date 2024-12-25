@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import authRouter from "./routes/auth_router.js";
+import uploadRouter from "./routes/upload_router.js";
 import { ConnectDB } from "./utils/connectDB.js";
 
 dotenv.config();
@@ -23,6 +24,7 @@ app.use(cookieParser());
 // routes
 
 app.use("/api/auth", authRouter);
+app.use("/api/upload", uploadRouter);
 
 // Error middleware
 
