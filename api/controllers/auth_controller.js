@@ -26,7 +26,11 @@ export const handleUserLogin = wrapAsync(async (req, res, next) => {
   return res
     .cookie("authToken", toekn, { httpOnly: true, secure: false })
     .status(200)
-    .json({ message: "login Successfully", success: true });
+    .json({
+      message: "login Successfully",
+      success: true,
+      user: { _id: user._id, username: user.username },
+    });
 });
 
 export const handleUserSignup = wrapAsync(async (req, res, next) => {
@@ -48,5 +52,9 @@ export const handleUserSignup = wrapAsync(async (req, res, next) => {
   return res
     .cookie("authToken", toekn, { httpOnly: true, secure: false })
     .status(200)
-    .json({ message: "Signup Successfully", success: true });
+    .json({
+      message: "Signup Successfully",
+      success: true,
+      user: { _id: newUser._id, username: newUser.username },
+    });
 });
