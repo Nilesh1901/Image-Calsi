@@ -6,6 +6,8 @@ import { useState } from "react";
 import axios from "axios";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
+import { useDispatch } from "react-redux";
+import { signInSuccess } from "@/app/features/userSlice";
 
 function SignUp() {
   const [formData, setFormData] = useState({
@@ -18,6 +20,7 @@ function SignUp() {
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const dispatch = useDispatch();
 
   function handleOnChange(e: React.ChangeEvent<HTMLInputElement>): void {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -34,6 +37,7 @@ function SignUp() {
       const data = res.data;
 
       if (data.success) {
+        dispatch(signInSuccess(data.user));
         setSuccessMsg(data.message || "Signup successful!");
         setLoading(false);
         toast({

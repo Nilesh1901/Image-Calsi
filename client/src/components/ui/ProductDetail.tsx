@@ -9,26 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-function ProductDetail() {
-  const products = [
-    {
-      productName: "mia",
-      quantity: 10,
-      pricePerUnit: 12,
-    },
-    {
-      productName: "mia",
-      quantity: 10,
-      pricePerUnit: 100,
-    },
-    {
-      productName: "mi7a",
-      quantity: 10,
-      pricePerUnit: 12,
-    },
-  ];
-
-  const totalPrice = 1230;
+function ProductDetail({ products, totalPrice }) {
   return (
     <div className="w-1/2 bg-white rounded-sm mb-10">
       <Table className="">
@@ -41,8 +22,8 @@ function ProductDetail() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {products.map((product) => (
-            <TableRow>
+          {products.map((product, idx) => (
+            <TableRow key={idx}>
               <TableCell className="font-medium">
                 {product.productName}
               </TableCell>

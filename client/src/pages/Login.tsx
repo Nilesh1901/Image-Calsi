@@ -34,6 +34,7 @@ function Login() {
       const res = await axios.post("/api/auth/login", formData);
       const data = res.data;
       if (data.success) {
+        dispatch(signInSuccess(data.user));
         setSuccessMsg(data.message || "Login successful!");
         setLoading(false);
         toast({

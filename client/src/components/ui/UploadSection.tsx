@@ -14,11 +14,11 @@ import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { Skeleton } from "@/components/ui/skeleton"; // Import Skeleton component
 import ProductDetail from "./ProductDetail";
+import ProductDetailSkeleton from "./ProductDetailSkeleton";
 
 function UploadSection() {
   const [file, setFile] = useState<File | null>(null);
   const [dragging, setDragging] = useState(false);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageProgress, setImageProgress] = useState<number>(0);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [imageUploading, setImageUploading] = useState(false);
@@ -52,19 +52,23 @@ function UploadSection() {
   const validateFile = (file: File) => {
     if (file.size > MAX_FILE_SIZE) {
       setUploadError("File size exceeds 5 MB.");
+      toast({
+        title: "File size exceeds 5 MB."!,
+        description: "error",
+      });
     } else {
       setFile(file);
       setUploadError(null);
     }
   };
 
-  const uploadImageFile = useCallback(async () => {
-    if (!file) return;
-
+  const uploadImageFile = useCallback(async (): Promise<string> => {
+    if (!file) throw new Error("No file selected.");
     setImageUploading(true);
+
     const storage = getStorage(app);
-    const fileName = `${Date.now()}_${file.name}`;
-    const storageRef = ref(storage, file);
+    const fileName = Date.now() + file.name;
+    const storageRef = ref(storage, fileName);
 
     const uploadTask = uploadBytesResumable(storageRef, file);
 
@@ -77,15 +81,16 @@ function UploadSection() {
           setImageProgress(progress);
         },
         (err) => {
+          console.error(err);
           setUploadError(err.message);
           setImageUploading(false);
           reject(err);
         },
         async () => {
           const url = await getDownloadURL(uploadTask.snapshot.ref);
-          setImageUrl(url);
           setImageUploading(false);
-          resolve(url);
+          setFile(null);
+          resolve(url); // Return the URL
         }
       );
     });
@@ -101,27 +106,23 @@ function UploadSection() {
     }
 
     try {
-      await uploadImageFile();
-
-      if (!imageUrl) {
-        throw new Error("Image URL not available.");
-      }
+      const url = await uploadImageFile(); // Get the URL directly
 
       setIsCalculating(true);
 
       const { data } = await axios.post(
         "/api/upload",
-        { imageUrl },
+        { imageUrl: url }, // Use the URL here
         { withCredentials: true }
       );
-
+      console.log(data);
       setProducts(data.products);
       setTotalPrice(data.totalPrice);
-      toast({ title: "Upload successful!", description: "Data processed." });
+      toast({ title: "Upload successful!", description: "success" });
     } catch (err: any) {
       toast({
-        title: "Upload failed.",
-        description: err.response?.data?.message || err.message || "Error.",
+        title: err.response?.data?.message || err.message || "Error.",
+        description: "error",
       });
     } finally {
       setIsCalculating(false);
@@ -173,7 +174,7 @@ function UploadSection() {
       </div>
 
       {/* Progress Bar */}
-      {imageProgress > 0 && (
+      {imageUploading && (
         <div className="flex justify-center mt-4">
           <Progress value={imageProgress} className="w-96" />
         </div>
@@ -184,14 +185,10 @@ function UploadSection() {
 
       {/* Results */}
       {isCalculating ? (
-        <div className="mt-6">
-          <Skeleton className="h-6 w-3/4 mx-auto mb-2" />
-          <Skeleton className="h-6 w-3/5 mx-auto mb-2" />
-          <Skeleton className="h-6 w-2/5 mx-auto" />
-        </div>
+        <ProductDetailSkeleton />
       ) : products.length > 0 ? (
         <div className="w-full flex justify-center mt-10">
-          <ProductDetail />
+          <ProductDetail products={products} totalPrice={totalPrice} />
         </div>
       ) : null}
 

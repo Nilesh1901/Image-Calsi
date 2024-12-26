@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 
 export const handleUserLogin = wrapAsync(async (req, res, next) => {
   const { email, password } = req.body;
-  console.log(req.cookies);
+
   if (!email || !password) {
     return next(new ExpressError(404, "Both fields are required"));
   }

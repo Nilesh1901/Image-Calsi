@@ -10,7 +10,8 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     signInSuccess: (state, action) => {
-      state = action.payload;
+      state._id = action.payload._id;
+      state.username = action.payload.username;
     },
   },
 });

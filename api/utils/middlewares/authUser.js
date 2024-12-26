@@ -12,7 +12,6 @@ export async function authenticateUser(req, res, next) {
     const verifyToken = jwt.verify(authToken, process.env.JWT_SECRET);
 
     req.userId = verifyToken.userId;
-    console.log(verifyToken);
     return next();
   } catch (error) {
     return next(new ExpressError(401, "Unauthorized"));
