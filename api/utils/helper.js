@@ -3,10 +3,11 @@ export function parseTextAndCalculateTotal(extractedText) {
 
   const products = lines
     .map((line) => {
-      const match = line.trim().match(/^(\w+)\s+(\d+)\s*x\s*(\d+)$/); 
+      // Updated regex to capture products with more flexible handling of spaces and special characters
+      const match = line.trim().match(/^([a-zA-Z0-9\s]+)\s+(\d+)\s*x\s*(\d+)$/);
       if (match) {
         return {
-          productName: match[1], // Alphanumeric product name
+          productName: match[1].trim(), // Trim to remove any extra spaces
           quantity: parseInt(match[2], 10), // Quantity
           pricePerUnit: parseInt(match[3], 10), // Price per unit
         };
