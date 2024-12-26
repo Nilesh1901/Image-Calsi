@@ -51,7 +51,7 @@ function SignUp() {
     } catch (err: any) {
       setError(err.response?.data?.message || err.message);
       toast({
-        title: error || "something went wrong",
+        title: error!,
         description: "error",
       });
       setLoading(false);

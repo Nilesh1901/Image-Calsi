@@ -1,6 +1,7 @@
 import Header from "@/components/ui/Header";
 import BrandDiscription from "@/components/ui/BrandDiscription";
 import UploadSection from "@/components/ui/UploadSection";
+import { Toaster } from "@/components/ui/toaster";
 
 function Home() {
   return (
@@ -8,6 +9,7 @@ function Home() {
       <Header />
       <BrandDiscription />
       <UploadSection />
+      <Toaster />
     </div>
   );
 }

@@ -13,10 +13,14 @@ export const userSlice = createSlice({
       state._id = action.payload._id;
       state.username = action.payload.username;
     },
+    signOutSuccess: (state) => {
+      state._id = "";
+      state.username = "";
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { signInSuccess } = userSlice.actions;
+export const { signInSuccess, signOutSuccess } = userSlice.actions;
 
 export default userSlice.reducer;

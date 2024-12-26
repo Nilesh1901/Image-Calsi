@@ -20,7 +20,7 @@ export function Toaster() {
             {...props}
             className={` ${
               description === "error" ? "bg-red-500" : "bg-green-500"
-            } text-white text-left`}
+            } text-white text-left border-none`}
           >
             <div className="grid gap-1">
               {description && (
