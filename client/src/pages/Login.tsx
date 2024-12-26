@@ -5,8 +5,10 @@ import logo from "@/assets/login_image.svg";
 import { useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
+import { signInSuccess } from "@/app/features/userSlice";
 
 import axios from "axios";
+import { useDispatch } from "react-redux";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -18,6 +20,7 @@ function Login() {
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const dispatch = useDispatch();
 
   function handleOnChange(e: React.ChangeEvent<HTMLInputElement>): void {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));

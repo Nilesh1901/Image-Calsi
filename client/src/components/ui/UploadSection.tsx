@@ -7,16 +7,26 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import axios from "axios";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Progress } from "@/components/ui/progress";
+import { useSelector } from "react-redux";
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
+import { Skeleton } from "@/components/ui/skeleton"; // Import Skeleton component
+import ProductDetail from "./ProductDetail";
 
 function UploadSection() {
   const [file, setFile] = useState<File | null>(null);
   const [dragging, setDragging] = useState(false);
-  const [imageUrl, setImageUrl] = useState("");
-  const [imageProgress, setImageProgress] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imageProgress, setImageProgress] = useState<number>(0);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [imageUploading, setImageUploading] = useState(false);
+  const [products, setProducts] = useState<any[]>([]);
+  const [totalPrice, setTotalPrice] = useState<number | null>(null);
+  const [isCalculating, setIsCalculating] = useState(false); // Loading state for backend processing
+  const { toast } = useToast();
+  const user = useSelector((state: any) => state.user);
 
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
@@ -25,115 +35,119 @@ function UploadSection() {
     setDragging(true);
   };
 
-  const handleDragLeave = () => {
-    setDragging(false);
-  };
+  const handleDragLeave = () => setDragging(false);
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setDragging(false);
     const droppedFile = e.dataTransfer.files[0];
-    if (droppedFile) {
-      if (droppedFile.size > MAX_FILE_SIZE) {
-        setUploadError("File size exceeds 5 MB.");
-        return;
-      }
-      setFile(droppedFile);
-    }
+    if (droppedFile) validateFile(droppedFile);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      if (selectedFile.size > MAX_FILE_SIZE) {
-        setUploadError("File size exceeds 5 MB.");
-        return;
-      }
-      setFile(selectedFile);
+    if (selectedFile) validateFile(selectedFile);
+  };
+
+  const validateFile = (file: File) => {
+    if (file.size > MAX_FILE_SIZE) {
+      setUploadError("File size exceeds 5 MB.");
+    } else {
+      setFile(file);
       setUploadError(null);
     }
   };
 
-  useEffect(() => {
-    if (file) {
-      uploadImageFile();
-    }
-  }, [file]);
-
   const uploadImageFile = useCallback(async () => {
-    if (file) {
-      setImageUploading(true);
+    if (!file) return;
 
-      const storage = getStorage(app);
-      const fileName = new Date().getTime() + file.name;
-      const storageRef = ref(storage, fileName);
-      const uploadTask = uploadBytesResumable(storageRef, file);
+    setImageUploading(true);
+    const storage = getStorage(app);
+    const fileName = `${Date.now()}_${file.name}`;
+    const storageRef = ref(storage, file);
 
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    return new Promise((resolve, reject) => {
       uploadTask.on(
         "state_changed",
         (snapshot) => {
           const progress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setImageProgress(progress.toFixed(0));
+          setImageProgress(progress);
         },
         (err) => {
-          console.log(err);
           setUploadError(err.message);
           setImageUploading(false);
+          reject(err);
         },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-            setImageUrl(url);
-            setImageUploading(false);
-            setUploadError(null);
-          });
+        async () => {
+          const url = await getDownloadURL(uploadTask.snapshot.ref);
+          setImageUrl(url);
+          setImageUploading(false);
+          resolve(url);
         }
       );
-    }
+    });
   }, [file]);
 
   const handleSubmit = async () => {
-    if (!imageUrl) {
-      console.error("Image URL is not available.");
+    setProducts([]);
+    setTotalPrice(null);
+
+    if (!user) {
+      toast({ title: "Please log in before uploading.", description: "error" });
       return;
     }
 
     try {
-      const res = await axios.post(
+      await uploadImageFile();
+
+      if (!imageUrl) {
+        throw new Error("Image URL not available.");
+      }
+
+      setIsCalculating(true);
+
+      const { data } = await axios.post(
         "/api/upload",
         { imageUrl },
         { withCredentials: true }
       );
-      console.log("Backend Response:", res.data);
-    } catch (error) {
-      console.error("Error submitting form:", error);
+
+      setProducts(data.products);
+      setTotalPrice(data.totalPrice);
+      toast({ title: "Upload successful!", description: "Data processed." });
+    } catch (err: any) {
+      toast({
+        title: "Upload failed.",
+        description: err.response?.data?.message || err.message || "Error.",
+      });
+    } finally {
+      setIsCalculating(false);
     }
   };
-
-  const isUploading = imageUploading || imageProgress !== null;
 
   return (
     <div className="mt-12">
       <div className="flex items-center justify-center p-6">
         <div>
           <div
-            onDragOver={!isUploading ? handleDragOver : undefined}
-            onDragLeave={!isUploading ? handleDragLeave : undefined}
-            onDrop={!isUploading ? handleDrop : undefined}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
             className={`w-96 mb-4 p-4 h-32 border-2 border-dashed ${
               dragging ? "border-blue-500 bg-blue-50" : "border-gray-300"
-            } flex items-center justify-center text-zinc-300 ${
-              isUploading ? "opacity-50 pointer-events-none" : ""
-            }`}
+            } flex items-center justify-center text-gray-500`}
           >
-            {file ? <p>{file.name}</p> : <p>Drag & Drop your file here or click to upload</p>}
+            {file ? <p>{file.name}</p> : <p>Drag & Drop or click to upload</p>}
           </div>
+
           <input
             type="file"
-            onChange={handleFileChange}
-            className="mt-4"
-            style={{ display: "none" }}
             id="fileInput"
+            style={{ display: "none" }}
+            onChange={handleFileChange}
           />
           <div className="flex items-center mt-2 justify-between">
             <label
@@ -143,22 +157,45 @@ function UploadSection() {
               Choose File
             </label>
             <Button
-              variant={"outline"}
-              size={"lg"}
-              disabled={isUploading || !imageUrl}
+              variant="outline"
+              size="lg"
+              disabled={imageUploading || !file || isCalculating}
               onClick={handleSubmit}
             >
-              {imageUploading ? "Uploading..." : "Submit"}
+              {imageUploading
+                ? "Uploading..."
+                : isCalculating
+                ? "Calculating Total..."
+                : "Submit"}
             </Button>
           </div>
         </div>
       </div>
-      {imageProgress && (
+
+      {/* Progress Bar */}
+      {imageProgress > 0 && (
         <div className="flex justify-center mt-4">
-          <Progress value={+imageProgress} className="w-96" />
+          <Progress value={imageProgress} className="w-96" />
         </div>
       )}
-      {uploadError && <p className="text-red-500">{uploadError}</p>}
+
+      {/* Errors */}
+      {uploadError && <p className="text-red-500 mt-2">{uploadError}</p>}
+
+      {/* Results */}
+      {isCalculating ? (
+        <div className="mt-6">
+          <Skeleton className="h-6 w-3/4 mx-auto mb-2" />
+          <Skeleton className="h-6 w-3/5 mx-auto mb-2" />
+          <Skeleton className="h-6 w-2/5 mx-auto" />
+        </div>
+      ) : products.length > 0 ? (
+        <div className="w-full flex justify-center mt-10">
+          <ProductDetail />
+        </div>
+      ) : null}
+
+      <Toaster />
     </div>
   );
 }
