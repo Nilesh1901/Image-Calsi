@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 
 export const handleUserLogin = wrapAsync(async (req, res, next) => {
   const { email, password } = req.body;
-  console.log(req.cookies)
+  console.log(req.cookies);
   if (!email || !password) {
     return next(new ExpressError(404, "Both fields are required"));
   }
@@ -24,7 +24,7 @@ export const handleUserLogin = wrapAsync(async (req, res, next) => {
 
   const toekn = user.generateAuthToken();
   return res
-    .cookie("auth_token", toekn, { httpOnly: true, secure: false })
+    .cookie("authToken", toekn, { httpOnly: true, secure: false })
     .status(200)
     .json({ message: "login Successfully", success: true });
 });
@@ -46,7 +46,7 @@ export const handleUserSignup = wrapAsync(async (req, res, next) => {
 
   const toekn = newUser.generateAuthToken();
   return res
-    .cookie("auth_token", toekn, { httpOnly: true, secure: false })
+    .cookie("authToken", toekn, { httpOnly: true, secure: false })
     .status(200)
     .json({ message: "Signup Successfully", success: true });
 });
