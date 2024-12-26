@@ -16,7 +16,7 @@ function Header() {
 
   const handleLogout = async () => {
     try {
-      const res = await axios.post("/api/user/logout"); // Ensure the endpoint is correct
+      const res = await axios.post("/api/auth/logout"); // Ensure the endpoint is correct
       const { message } = res.data;
 
       console.log(message);
@@ -37,38 +37,39 @@ function Header() {
       });
     }
   };
-
   return (
-    <div className="w-full p-4 px-12 flex items-center bg-[#415a77] text-white justify-between shadow-sm">
-      {/* brand logo */}
-      <div className=" flex items-center gap-3">
-        <img src={brandLogo} className="w-12 rounded-full " alt="" />
-        <h1 className="font-extrabold text-2xl">Image Clasi</h1>
-      </div>
-      <div>
-        {user ? (
-          <div className="flex items-center gap-3">
-            <img
-              src={profileIcon}
-              className="w-12 rounded-full object-cover"
-              alt=""
-            />
-            <h1 className=" font-medium text-lg">{user.username}</h1>
-            <Button onClick={handleLogout}>Log Out</Button>
-          </div>
-        ) : (
-          <div className="flex gap-4 text-black pr-10">
-            <Button variant={"outline"} onClick={() => navigate("/signup")}>
-              Sign Up
-            </Button>
-            <Button variant={"outline"} onClick={() => navigate("/login")}>
-              Login
-            </Button>
-          </div>
-        )}
+    <>
+      <div className="w-full p-4 px-12 flex items-center bg-[#415a77] text-white justify-between shadow-sm">
+        {/* brand logo */}
+        <div className=" flex items-center gap-3">
+          <img src={brandLogo} className="w-12 rounded-full " alt="" />
+          <h1 className="font-extrabold text-2xl">Image Clasi</h1>
+        </div>
+        <div>
+          {user.username ? (
+            <div className="flex items-center gap-3">
+              <img
+                src={profileIcon}
+                className="w-12 rounded-full object-cover"
+                alt=""
+              />
+              <h1 className=" font-medium text-lg">{user.username}</h1>
+              <Button onClick={handleLogout}>Log Out</Button>
+            </div>
+          ) : (
+            <div className="flex gap-4 text-black pr-10">
+              <Button variant={"outline"} onClick={() => navigate("/signup")}>
+                Sign Up
+              </Button>
+              <Button variant={"outline"} onClick={() => navigate("/login")}>
+                Login
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
       <Toaster />
-    </div>
+    </>
   );
 }
 

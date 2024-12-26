@@ -23,7 +23,7 @@ function UploadSection() {
   const [imageUploading, setImageUploading] = useState(false);
   const [products, setProducts] = useState<any[]>([]);
   const [totalPrice, setTotalPrice] = useState<number | null>(null);
-  const [isCalculating, setIsCalculating] = useState(false); // Loading state for backend processing
+  const [isCalculating, setIsCalculating] = useState(false);
   const { toast } = useToast();
   const user = useSelector((state: any) => state.user);
 
@@ -50,11 +50,9 @@ function UploadSection() {
 
   const validateFile = (file: File) => {
     if (file.size > MAX_FILE_SIZE) {
-      setUploadError("File size exceeds 5 MB.");
-      toast({
-        title: "File size exceeds 5 MB."!,
-        description: "error",
-      });
+      const errorMsg = "File size exceeds 5 MB.";
+      setUploadError(errorMsg);
+      toast({ title: errorMsg, description: "error" });
     } else {
       setFile(file);
       setUploadError(null);
@@ -81,25 +79,34 @@ function UploadSection() {
         },
         (err) => {
           console.error(err);
-          setUploadError(err.message);
+          setUploadError(err.message || "Upload failed.");
           setImageUploading(false);
           reject(err);
         },
         async () => {
-          const url = await getDownloadURL(uploadTask.snapshot.ref);
-          setImageUploading(false);
-          setFile(null);
-          resolve(url); // Return the URL
+          try {
+            const url = await getDownloadURL(uploadTask.snapshot.ref);
+            setImageUploading(false);
+            setFile(null); // Clear the file after uploading
+            resolve(url); // Return the URL
+          } catch (error) {
+            setUploadError("Error fetching the download URL.");
+            setImageUploading(false);
+            reject(error);
+          }
         }
       );
     });
   }, [file]);
 
   const handleSubmit = async () => {
+    // Reset previous results and state before uploading
     setProducts([]);
     setTotalPrice(null);
+    setImageProgress(0);
+    setUploadError(null);
 
-    if (!user) {
+    if (!user.username || !user._id) {
       toast({ title: "Please log in before uploading.", description: "error" });
       return;
     }
@@ -111,18 +118,18 @@ function UploadSection() {
 
       const { data } = await axios.post(
         "/api/upload",
-        { imageUrl: url }, // Use the URL here
+        { imageUrl: url },
         { withCredentials: true }
       );
-      console.log(data);
       setProducts(data.products);
       setTotalPrice(data.totalPrice);
       toast({ title: "Upload successful!", description: "success" });
     } catch (err: any) {
-      toast({
-        title: err.response?.data?.message || err.message || "Error.",
-        description: "error",
-      });
+      const errorMsg =
+        err.response?.data?.message ||
+        err.message ||
+        "An unexpected error occurred.";
+      toast({ title: errorMsg, description: "error" });
     } finally {
       setIsCalculating(false);
     }

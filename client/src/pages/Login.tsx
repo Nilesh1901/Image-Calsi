@@ -2,13 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router";
 import logo from "@/assets/login_image.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
 import { signInSuccess } from "@/app/features/userSlice";
 
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -18,9 +18,17 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const user = useSelector((state: any) => state.user);
   const navigate = useNavigate();
   const { toast } = useToast();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    // Redirect to home if the user is already logged in
+    if (user.username || user._id) {
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   function handleOnChange(e: React.ChangeEvent<HTMLInputElement>): void {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));

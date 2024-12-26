@@ -2,11 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router";
 import logo from "@/assets/login_image.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { signInSuccess } from "@/app/features/userSlice";
 
 function SignUp() {
@@ -18,9 +18,16 @@ function SignUp() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const user = useSelector((state: any) => state.user);
   const navigate = useNavigate();
   const { toast } = useToast();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (user.username || user._id) {
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   function handleOnChange(e: React.ChangeEvent<HTMLInputElement>): void {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
