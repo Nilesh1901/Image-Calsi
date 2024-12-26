@@ -12,7 +12,6 @@ import { Progress } from "@/components/ui/progress";
 import { useSelector } from "react-redux";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
-import { Skeleton } from "@/components/ui/skeleton"; // Import Skeleton component
 import ProductDetail from "./ProductDetail";
 import ProductDetailSkeleton from "./ProductDetailSkeleton";
 
