@@ -1,4 +1,5 @@
 import User from "../models/user_model.js";
+import ExpressError from "../utils/error.js";
 import { parseTextAndCalculateTotal } from "../utils/helper.js";
 import wrapAsync from "../utils/wrapAsync.js";
 import Tesseract from "tesseract.js";
@@ -9,7 +10,7 @@ export const handleImageUpload = wrapAsync(async (req, res, next) => {
 
   // Ensure imageUrl is provided
   if (!imageUrl) {
-    return res.status(400).json({ error: "Image URL is required" });
+    return next(new ExpressError(400, "Image URL is required"));
   }
 
   // Extract text from the image using Tesseract.js
@@ -37,7 +38,7 @@ export const handleImageUpload = wrapAsync(async (req, res, next) => {
 
   // If the user was not found, handle the error
   if (!updatedUser) {
-    return res.status(404).json({ error: "User not found" });
+    return next(new ExpressError(404, "User not found"));
   }
 
   // Send the response
@@ -45,5 +46,6 @@ export const handleImageUpload = wrapAsync(async (req, res, next) => {
     extractedText: text,
     products,
     totalPrice,
+    success: true,
   });
 });
