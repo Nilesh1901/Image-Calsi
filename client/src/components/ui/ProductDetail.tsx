@@ -30,7 +30,7 @@ function ProductDetail({ products, totalPrice }: ProductDetailProps) {
           <TableRow>
             <TableHead className="text-center">Product Name</TableHead>
             <TableHead className="text-center">Quantity</TableHead>
-            <TableHead className="text-right">Amount</TableHead>
+            <TableHead className="text-center">Amount</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -40,16 +40,14 @@ function ProductDetail({ products, totalPrice }: ProductDetailProps) {
                 {product.productName}
               </TableCell>
               <TableCell>{product.quantity}</TableCell>
-              <TableCell className="text-right">
-                ₹ {product.pricePerUnit}
-              </TableCell>
+              <TableCell>₹ {product.pricePerUnit}</TableCell>
             </TableRow>
           ))}
         </TableBody>
         <TableFooter>
           <TableRow>
             <TableCell colSpan={2}>Total</TableCell>
-            <TableCell className="text-right">₹ {totalPrice}</TableCell>
+            <TableCell>₹ {totalPrice}</TableCell>
           </TableRow>
         </TableFooter>
       </Table>

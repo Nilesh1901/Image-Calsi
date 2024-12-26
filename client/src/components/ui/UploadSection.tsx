@@ -7,7 +7,7 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import axios from "axios";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Progress } from "@/components/ui/progress";
 import { useSelector } from "react-redux";
 import { useToast } from "@/hooks/use-toast";
@@ -18,7 +18,7 @@ import ProductDetailSkeleton from "./ProductDetailSkeleton";
 function UploadSection() {
   const [file, setFile] = useState<File | null>(null);
   const [dragging, setDragging] = useState(false);
-  const [imageProgress, setImageProgress] = useState<number>(0);
+  const [imageProgress, setImageProgress] = useState<number | null>(0);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [imageUploading, setImageUploading] = useState(false);
   const [products, setProducts] = useState<any[]>([]);
@@ -103,7 +103,7 @@ function UploadSection() {
     // Reset previous results and state before uploading
     setProducts([]);
     setTotalPrice(null);
-    setImageProgress(0);
+    setImageProgress(null);
     setUploadError(null);
 
     if (!user.username || !user._id) {
@@ -135,6 +135,14 @@ function UploadSection() {
     }
   };
 
+  // Reset the file input value after upload
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const resetFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""; // Reset the file input value
+    }
+  };
+
   return (
     <div className="mt-12">
       <div className="flex items-center justify-center p-6">
@@ -155,6 +163,7 @@ function UploadSection() {
             id="fileInput"
             style={{ display: "none" }}
             onChange={handleFileChange}
+            ref={fileInputRef} // Add ref to the file input
           />
           <div className="flex items-center mt-2 justify-between">
             <label
@@ -167,7 +176,10 @@ function UploadSection() {
               variant="outline"
               size="lg"
               disabled={imageUploading || !file || isCalculating}
-              onClick={handleSubmit}
+              onClick={() => {
+                handleSubmit();
+                resetFileInput(); // Reset file input after submit
+              }}
             >
               {imageUploading
                 ? "Uploading..."
