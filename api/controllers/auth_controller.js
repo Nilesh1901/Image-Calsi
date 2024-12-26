@@ -58,3 +58,10 @@ export const handleUserSignup = wrapAsync(async (req, res, next) => {
       user: { _id: newUser._id, username: newUser.username },
     });
 });
+
+export const handleLogout = wrapAsync(async (req, res, next) => {
+  return res
+    .clearCookie("authToken")
+    .status(200)
+    .json("user has been signed out");
+});
