@@ -182,7 +182,7 @@ function UploadSection() {
             </label>
             <Button
               variant="outline"
-              size="custom"
+              size="custom2"
               disabled={imageUploading || !file || isCalculating}
               onClick={() => {
                 handleSubmit();
