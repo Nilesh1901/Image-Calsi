@@ -154,12 +154,12 @@ function UploadSection() {
     <div className="mt-12">
       {/* { file input } */}
       <div className="flex items-center justify-center p-6">
-        <div className="flex flex-col items-center justify-center">
+        <div className="w-full md:w-auto flex flex-col items-center justify-center">
           <div
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
-            className={`w-96 mb-4 p-4 h-32 border-2 border-dashed ${
+            className={`w-full md:w-96 mb-4 p-4 h-32 border-2 border-dashed ${
               dragging ? "border-blue-500 bg-blue-50" : "border-gray-300"
             } flex items-center justify-center text-gray-500`}
           >
@@ -176,13 +176,13 @@ function UploadSection() {
           <div className="w-full flex items-center justify-between mt-2">
             <label
               htmlFor="fileInput"
-              className="px-4 py-2 bg-blue-500 text-white rounded cursor-pointer"
+              className="text-xs md:text-base px-4 py-2 bg-blue-500 text-white rounded cursor-pointer"
             >
               Choose File
             </label>
             <Button
               variant="outline"
-              size="lg"
+              size="custom"
               disabled={imageUploading || !file || isCalculating}
               onClick={() => {
                 handleSubmit();
