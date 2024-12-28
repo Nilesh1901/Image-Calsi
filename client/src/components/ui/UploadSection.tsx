@@ -220,7 +220,7 @@ function UploadSection() {
       {isCalculating ? (
         <ProductDetailSkeleton />
       ) : products.length > 0 ? (
-        <div className="w-full flex justify-center mt-10">
+        <div className="w-full px-4 md:p-0 flex justify-center mt-10">
           <ProductDetail products={products} totalPrice={totalPrice} />
         </div>
       ) : null}

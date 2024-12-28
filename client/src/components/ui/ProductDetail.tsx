@@ -23,7 +23,7 @@ type ProductDetailProps = {
 
 function ProductDetail({ products, totalPrice }: ProductDetailProps) {
   return (
-    <div className="w-1/2 bg-white rounded-sm mb-10">
+    <div className="w-full md:w-1/2 bg-white rounded-sm mb-10">
       <Table>
         <TableCaption>Here are your results</TableCaption>
         <TableHeader>
