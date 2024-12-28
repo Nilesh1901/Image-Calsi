@@ -46,8 +46,9 @@ function ProductDetail({ products, totalPrice }: ProductDetailProps) {
         </TableBody>
         <TableFooter>
           <TableRow>
-            <TableCell colSpan={2}>Total</TableCell>
-            <TableCell>₹ {totalPrice}</TableCell>
+            <TableCell className="text-center">Total</TableCell>
+            <TableCell></TableCell>
+            <TableCell className="">₹ {totalPrice}</TableCell>
           </TableRow>
         </TableFooter>
       </Table>

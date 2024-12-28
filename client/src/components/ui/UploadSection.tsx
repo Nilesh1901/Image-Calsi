@@ -24,11 +24,13 @@ function UploadSection() {
   const [products, setProducts] = useState<any[]>([]);
   const [totalPrice, setTotalPrice] = useState<number | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const { toast } = useToast();
   const user = useSelector((state: any) => state.user);
 
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
+  // handleing drag and drop functionality of input
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setDragging(true);
@@ -48,6 +50,7 @@ function UploadSection() {
     if (selectedFile) validateFile(selectedFile);
   };
 
+  // validating image it should not more then 5MB
   const validateFile = (file: File) => {
     if (file.size > MAX_FILE_SIZE) {
       const errorMsg = "File size exceeds 5 MB.";
@@ -55,10 +58,12 @@ function UploadSection() {
       toast({ title: errorMsg, description: "error" });
     } else {
       setFile(file);
+      setImagePreviewUrl(URL.createObjectURL(file));
       setUploadError(null);
     }
   };
 
+  // uploading image to firebase
   const uploadImageFile = useCallback(async (): Promise<string> => {
     if (!file) throw new Error("No file selected.");
     setImageUploading(true);
@@ -99,12 +104,14 @@ function UploadSection() {
     });
   }, [file]);
 
+  // uploading the image to backend
   const handleSubmit = async () => {
     // Reset previous results and state before uploading
     setProducts([]);
     setTotalPrice(null);
     setImageProgress(null);
     setUploadError(null);
+    setImagePreviewUrl(null);
 
     if (!user.username || !user._id) {
       toast({ title: "Please log in before uploading.", description: "error" });
@@ -145,8 +152,9 @@ function UploadSection() {
 
   return (
     <div className="mt-12">
+      {/* { file input } */}
       <div className="flex items-center justify-center p-6">
-        <div>
+        <div className="flex flex-col items-center justify-center">
           <div
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -165,7 +173,7 @@ function UploadSection() {
             onChange={handleFileChange}
             ref={fileInputRef} // Add ref to the file input
           />
-          <div className="flex items-center mt-2 justify-between">
+          <div className="w-full flex items-center justify-between mt-2">
             <label
               htmlFor="fileInput"
               className="px-4 py-2 bg-blue-500 text-white rounded cursor-pointer"
@@ -187,6 +195,13 @@ function UploadSection() {
                 ? "Calculating Total..."
                 : "Submit"}
             </Button>
+          </div>
+          <div className="flex justify-center mt-4">
+            <img
+              src={imagePreviewUrl || ""}
+              alt=""
+              className="w-full object-cover"
+            />
           </div>
         </div>
       </div>
