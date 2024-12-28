@@ -173,7 +173,7 @@ function UploadSection() {
             onChange={handleFileChange}
             ref={fileInputRef} // Add ref to the file input
           />
-          <div className="w-full flex items-center justify-between mt-2">
+          <div className="w-full gap-3 flex items-center justify-between mt-2">
             <label
               htmlFor="fileInput"
               className="text-xs md:text-base px-4 py-2 bg-blue-500 text-white rounded cursor-pointer"
