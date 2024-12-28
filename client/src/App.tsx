@@ -1,7 +1,8 @@
+import { lazy } from "react";
 import { Route, Routes } from "react-router";
-import SignUp from "./pages/SignUp";
-import Login from "./pages/Login";
-import Home from "./pages/Home";
+const SignUp = lazy(() => import("./pages/SignUp"));
+const Login = lazy(() => import("./pages/Login"));
+const Home = lazy(() => import("./pages/Home"));
 
 function App() {
   return (
